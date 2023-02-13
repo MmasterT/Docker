@@ -1,0 +1,193 @@
+# __default__:
+#     jobname:    'GEP.{rule}'
+#     partition:  begendiv,main
+#     # nCPUs:      "{threads}"
+#     qos:        'standard'
+#
+
+
+#### PRETEXT ####
+
+unzipFastq_R1_HiC:
+    mem_mb:     5000
+    time:       "01:30:05"
+    threads:    4
+
+
+unzipFastq_R2_HiC:
+    mem_mb:     5000
+    time:       "01:30:05"
+    threads:    4
+
+
+
+indexFasta_PRI:
+    mem_mb:     72000
+    time:       "02:30:00"
+    threads:    1
+
+convertFastqTObam_R1_HiC:
+    mem_mb:     32000
+    time:       "08:00:00"
+    threads:    12
+
+
+convertFastqTObam_R2_HiC:
+    mem_mb:     32000
+    time:       "08:00:00"
+    threads:    12
+
+filter5PrimeEnd_R1_HiC:
+    mem_mb:     2000
+    time:       "08:00:00"
+    threads:    4
+
+filter5PrimeEnd_R2_HiC:
+    mem_mb:     2000
+    time:       "08:00:00"
+    threads:    4
+
+
+pairAndCombineFiltered_HiC:
+    mem_mb:     9500
+    time:       "08:30:00"
+    threads:    12
+
+pretextMap:
+    mem_mb:     32000
+    time:       "08:30:00"
+    threads:    12
+
+pretextSnapshot:
+    mem_mb:     500
+    time:       "00:10:00"
+    threads:    1
+
+
+unzipFasta_PRI:
+    mem_mb:     500
+    time:       "00:15:00"
+    threads:    4
+
+
+
+unzipFasta_ALT:
+    mem_mb:     500
+    time:       "00:15:00"
+    threads:    4
+
+
+
+merqury:
+    mem_mb:     40000
+    time:       "08:00:00"
+    threads:    8
+
+busco5:
+    mem_mb:     150000
+    time:       "1-00:00:00"
+    threads:    16
+
+
+GenomeScope2Profiles:
+    mem_mb:     500
+    time:       "00:15:00"
+    threads:    1
+
+
+assemblyStats:
+    mem_mb:     500
+    time:       "00:15:00"
+    threads:    1
+
+
+# ReportWithoutComparisonTables_createPDF:
+#     mem_mb:     1000
+#     time:       "00:10:05"
+#     threads:    1
+
+###### Rules for illuminadb building ##########
+
+unzipFastq_R1_illumina:
+    mem_mb:     96000
+    time:       "01:45:05"
+    threads:    4
+
+
+unzipFastq_R2_illumina:
+    mem_mb:     96000
+    time:       "01:45:05"
+    threads:    4
+
+
+
+
+trim10xBarcodes_illumina:
+    mem_mb:     5000
+    time:       "02:30:05"
+    threads:    4
+
+
+
+trimSequencingAdapters_illumina:
+    mem_mb:     5000
+    time:       "02:30:05"
+    threads:    8
+
+
+fastQC_illumina:
+    mem_mb:     1000
+    time:       "04:00:05"
+    threads:    4
+
+
+merylCount_R1_illumina:
+    mem_mb:     20000
+    time:       "01:30:05"
+    threads:    12
+
+merylCount_R2_illumina:
+    mem_mb:     20000
+    time:       "01:30:05"
+    threads:    12
+
+merylUnion_illumina:
+    mem_mb:     30000
+    time:       "02:45:05"
+    threads:    12
+
+
+
+
+###### HIFI BUILD #######
+
+unzipFastq_hifi:
+    mem_mb:     128000
+    time:       "01:30:05"
+    threads:    4
+
+trimSMRTBellAdapters_hifi:
+    mem_mb:     96000
+    time:       "01:30:05"
+    threads:    4
+
+
+fastQC_hifi:
+    mem_mb:     12000
+    time:       "04:00:05"
+    threads:    2
+
+multiQC_hifi:
+    mem_mb:     4000
+    time:       "01:15:05"
+    threads:    2
+
+merylCount_hifi:
+    mem_mb:     96000
+    time:       "02:30:05"
+    threads:    12
+
+merylUnion_hifi:
+    mem_mb:     96000
+    time:       "01:30:05"
+    threads:    12

@@ -1,0 +1,6 @@
+sample      Library_R1				   Library_R2     			  meryl_kmer_size  trim10x  trimAdapters  fastQC
+organismX   /<pathto>/organismX_Library1_R1.fq.gz  /<pathto>/organismX_Library1_R2.fq.gz  21		   False    False	  True
+organismX   /<pathto>/organismX_Library2_R1.fq.gz  /<pathto>/organismX_Library2_R2.fq.gz  21		   False    False	  True
+organismY   /<pathto>/organismY_Library1_R1.fastq  /<pathto>/organismY_Library1_R2.fastq  21		   True	    True	  True
+organismY   /<pathto>/organismY_Library2_R1.fastq  /<pathto>/organismY_Library2_R2.fastq  21		   True	    True	  True
+organismY   /<pathto>/organismY_Library3_R1.fastq  /<pathto>/organismY_Library3_R2.fastq  21		   True	    True	  True

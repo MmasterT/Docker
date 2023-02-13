@@ -1,0 +1,278 @@
+import numpy as np
+from itertools import groupby
+import json
+import pandas as pd
+import yaml
+import os
+import sys
+import csv
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import argparse, subprocess
+
+container: "docker://gepdocker/gep_dockerimage:latest"
+configfile: "configuration/config.yaml"
+
+### LOAD IN RESOURCES CONFIG  ###
+with open(config['resources'], 'r') as f:
+	resource = yaml.safe_load(f)
+
+### GET BASENAME FOR READS WILDCARDS ###
+# def getBasename4Reads(path):
+# 	base=os.path.basename(path)
+# 	return os.path.splitext(base)[0]
+
+### CHECK IF INPUT IS GZIPPED ###
+def gzipped_or_not(path):
+	trueORfalse=path.endswith('.gz')
+	return trueORfalse
+
+### CHECK IF HIC AND/OR ALT_ASM FILES ARE GIVEN, OR VALUE IS NONE  ###
+def FILE_present_or_not(path):
+	if path == 'None':
+		return False
+	return True
+
+
+### CHECK IF GENOME_SIZE IS PROVIDED, OR VALUE IS AUTO ###
+def genomeSize_auto_or_not(given_size):
+	if given_size == 'auto':
+		return 0
+	return given_size
+
+
+
+
+	# def to_be_smrtTrimmed(userAnswer):
+	# 	if userAnswer == 'True':
+	# 		string2Add="smrtTrimmed"
+	# 	elif userAnswer == 'False':
+	# 		string2Add="notsmrtTrimmed"
+
+samples = pd.read_csv(config['samplesTSV'], dtype=str, index_col=False, delim_whitespace=True, skip_blank_lines=True)
+if set(['sample', 'Library_R1', 'Library_R2', 'meryl_kmer_size', 'trim10X', 'trimAdapters', 'fastQC']).issubset(samples.columns):
+	whichRule = "rules/build_illumina.smk"
+	# samples=samples.reset_index()
+	samples['readCounter'] = samples.groupby(['sample']).cumcount()+1
+	samples['readCounter'] = samples['readCounter'].astype(str)
+	samples['readCounter'] = samples['sample'] + "_LibraryPair" + samples['readCounter']
+
+	samples['10xtrimorNot'] = np.where(samples['trim10X'] == "True", "10xTrimmed", "not10xTrimmed")
+	samples['AdpaterTrimorNot'] = np.where(samples['trimAdapters'] == "True", "AdaptTrimmed", "notAdaptTrimmed")
+
+	dictSamples=samples[['sample','meryl_kmer_size', '10xtrimorNot','AdpaterTrimorNot']]
+	dictSamples=dictSamples.set_index(['sample']).T.to_dict('list')
+
+	testDictQC=samples[['sample', '10xtrimorNot', 'AdpaterTrimorNot', 'fastQC']]
+	testDictQC = testDictQC[testDictQC['fastQC'] == "True"]
+	testDictQC=testDictQC.drop_duplicates('sample', keep='first')
+	testDictQC=testDictQC.set_index(['sample']).T.to_dict('list')
+
+	trimAdapters = samples[samples['trimAdapters'] == "True"]
+
+	dictReadCounter = {}
+	for i in samples['sample'].unique():
+		dictReadCounter[i] = [samples['readCounter'][j] for j in samples[samples['sample']==i].index]
+	# dkmerSize = {}
+	samples['gzipped_R1']=samples['Library_R1'].apply(gzipped_or_not)
+	samples['gzipped_R2']=samples['Library_R2'].apply(gzipped_or_not)
+
+
+	noGzip_R1 = samples[samples['gzipped_R1'] == False]
+	noGzip_R1=noGzip_R1.set_index(['sample','readCounter'])
+
+
+	noGzip_R2 = samples[samples['gzipped_R2'] == False]
+	noGzip_R2=noGzip_R2.set_index(['sample','readCounter'])
+
+
+
+	yesGzip_R1 = samples[samples['gzipped_R1'] == True]
+	yesGzip_R1=yesGzip_R1.set_index(['sample','readCounter'])
+
+
+	yesGzip_R2 = samples[samples['gzipped_R2'] == True]
+	yesGzip_R2=yesGzip_R2.set_index(['sample','readCounter'])
+
+	samples=samples.set_index(['sample','readCounter'])
+
+	ruleAllQCFiles=[]
+	if samples['fastQC'].str.contains('True').any():
+		ruleAllQCFiles=[expand(os.path.join(config['Results'],"0_buildDatabases/{sample}/illuminaReads/QC/multiqc/{sample}.multiqcReport.html"), sample=key) for key, [value1, value2, value3] in testDictQC.items()]
+	ruleAll=[expand(os.path.join(config['Results'], "0_buildDatabases/{sample}/illuminaReads/merylDb/complete_illumina.{sample}.{kmer}.meryl"), sample=key, kmer=value1) for key, [value1, value2, value3] in dictSamples.items()]
+
+elif set(['sample', 'hifi_reads', 'meryl_kmer_size','trimSMRTbell', 'fastQC']).issubset(samples.columns):
+	whichRule = "rules/build_hifi.smk"
+	# samples=samples.reset_index()
+	samples['readCounter'] = samples.groupby(['sample']).cumcount()+1
+	samples['readCounter'] = samples['readCounter'].astype(str)
+	samples['readCounter'] = samples['sample'] + "_Library" + samples['readCounter']
+	samples['smrtornot'] = np.where(samples['trimSMRTbell'] == "True", "smrtTrimmed", "notsmrtTrimmed")
+
+	dictSamples=samples[['sample','meryl_kmer_size', 'smrtornot']]
+	dictSamples=dictSamples.drop_duplicates('sample', keep='first')
+	dictSamples=dictSamples.set_index(['sample']).T.to_dict('list')
+
+
+	testDictQC=samples[['sample', 'smrtornot', 'fastQC']]
+	testDictQC = testDictQC[testDictQC['fastQC'] == "True"]
+
+
+	testDictQC=testDictQC.set_index(['sample']).T.to_dict('list')
+
+
+	dictReadCounter = {}
+	for i in samples['sample'].unique():
+		dictReadCounter[i] = [samples['readCounter'][j] for j in samples[samples['sample']==i].index]
+	samples['gzipped_hifi']=samples['hifi_reads'].apply(gzipped_or_not)
+
+
+	noGzip_hifi = samples[samples['gzipped_hifi'] == False]
+	noGzip_hifi=noGzip_hifi.set_index(['sample','readCounter'])
+
+
+	yesGzip_hifi = samples[samples['gzipped_hifi'] == True]
+	yesGzip_hifi=yesGzip_hifi.set_index(['sample','readCounter'])
+
+
+	samples=samples.set_index(['sample','readCounter'])
+	ruleAllQCFiles=[]
+
+	if samples['fastQC'].str.contains('True').any():
+		ruleAllQCFiles=[expand(os.path.join(config['Results'],"0_buildDatabases/{sample}/hifiReads/QC/multiqc/{sample}.multiqcReport.html"), sample=key) for key, [value1, value2] in testDictQC.items()]
+	ruleAll=[expand(os.path.join(config['Results'],"0_buildDatabases/{sample}/hifiReads/merylDb/complete_hifi.{sample}.{kmer}.meryl"), sample=key, kmer=value1) for key, [value1, value2] in dictSamples.items()]
+elif set(['ID',	'ASM_LEVEL', 'PRI_asm', 'ALT_asm',	'merylDB',	'merylDB_kmer', 'genomeSize', 'HiC_R1', 'HiC_R2']).issubset(samples.columns):
+
+	whichRule = "rules/evaluate.smk"
+	samples['genomeSize']=samples['genomeSize'].apply(genomeSize_auto_or_not)
+
+### make new column for whether or not path/file given is gzipped (True or False)
+	samples['gzipped_PRI']=samples['PRI_asm'].apply(gzipped_or_not)
+	samples['gzipped_ALT']=samples['ALT_asm'].apply(gzipped_or_not)
+	samples['gzipped_HiC_R1']=samples['HiC_R1'].apply(gzipped_or_not)
+	samples['gzipped_HiC_R2']=samples['HiC_R2'].apply(gzipped_or_not)
+
+### new column for whether or not alt asm is provided or not
+	samples['ALT_present']=samples['ALT_asm'].apply(FILE_present_or_not)
+	samples['HiC_R1_present']=samples['HiC_R1'].apply(FILE_present_or_not)
+	samples['HiC_R2_present']=samples['HiC_R2'].apply(FILE_present_or_not)
+	samples['merylDB_present']=samples['merylDB'].apply(FILE_present_or_not)
+
+	testDictPRETEXT = samples[['ID', 'HiC_R1_present', 'HiC_R2_present']]
+
+	testDictPRETEXT = testDictPRETEXT[(testDictPRETEXT['HiC_R1_present'] == True) & (testDictPRETEXT['HiC_R2_present'] == True)]
+
+	testDictPRETEXT=testDictPRETEXT.set_index(['ID']).T.to_dict('list')
+
+
+
+	noGzip_HiC_R1 = samples[samples['gzipped_HiC_R1'] == False]
+	noGzip_HiC_R1 = noGzip_HiC_R1.set_index(['ID'])
+	noGzip_HiC_R2 = samples[samples['gzipped_HiC_R2'] == False]
+	noGzip_HiC_R2 = noGzip_HiC_R2.set_index(['ID'])
+
+	yesGzip_HiC_R1 = samples[samples['gzipped_HiC_R1'] == True]
+	yesGzip_HiC_R1 = yesGzip_HiC_R1.set_index(['ID'])
+	yesGzip_HiC_R2 = samples[samples['gzipped_HiC_R2'] == True]
+	yesGzip_HiC_R2 = yesGzip_HiC_R2.set_index(['ID'])
+
+	noGzip_PRI = samples[samples['gzipped_PRI'] == False]
+	noGzip_PRI=noGzip_PRI.set_index(['ID'])
+
+	yesGzip_PRI = samples[samples['gzipped_PRI'] == True]
+	yesGzip_PRI = yesGzip_PRI.set_index(['ID'])
+
+	noGzip_ALT = samples[samples['gzipped_ALT'] == False]
+	noGzip_ALT = noGzip_ALT[noGzip_ALT['ALT_present'] == True]
+	noGzip_ALT = noGzip_ALT.set_index(['ID'])
+	noGzip_ALTDict=noGzip_ALT.T.to_dict('list')
+
+	no_ALT = samples[samples['gzipped_ALT'] == False]
+	no_ALT = no_ALT[no_ALT['ALT_present'] == False]
+	no_ALT=no_ALT.set_index(['ID'])
+	no_ALTDict=no_ALT.T.to_dict('list')
+
+	yesGzip_ALT = samples[samples['gzipped_ALT'] == True]
+	yesGzip_ALT=yesGzip_ALT.set_index(['ID'])
+
+	samples=samples.set_index(['ID'])
+
+	dictSamples=samples.T.to_dict('list')
+
+	ruleAllQCFiles=[]
+	ruleAll=expand(os.path.join(config['Results'],"1_evaluation/{asmID}/KEY_RESULTS/{asmID}_aggregatedSTATS.tsv"), asmID=list(dictSamples.keys())),\
+			os.path.join(config['Results'],"1_evaluation/finalResults/GEP_FINAL_REPORT.pdf")
+
+
+###  DOWNLOAD BUSCO LINEAGE (IF IT DOESN'T ALREADY EXIST)  ####
+
+	args_o=os.path.join(workflow.basedir, "buscoLineage")
+	args_l=config['busco5Lineage']
+	checkLineagePath=args_o + "/" + args_l + "_odb10"
+	checkLineageDled=args_o + "/" + args_l
+	outDir=args_o
+
+
+	if os.path.isdir(args_l) is True:
+	#	subprocess.call("ln -sf %s %s"%(args.l, args.l), shell=True)
+		buscoDataBaseName=os.path.basename(args_l)
+		buscoDataBaseName=buscoDataBaseName[:-6]
+	#	print("Lineage path given, basename is:", buscoDataBaseName)
+	elif os.path.isdir(args_l) is False and os.path.isdir(checkLineagePath) is True:
+	#	subprocess.call("ln -sf %s %s"%(checkLineagePath, checkLineageDled), shell=True)
+		buscoDataBaseName=os.path.basename(checkLineagePath)
+		buscoDataBaseName=buscoDataBaseName[:-6]
+	#	print("Database already in buscoLineage directory, basename is:", buscoDataBaseName)
+	else:
+	#	print("Database will be downloaded")
+		url = "https://busco-data.ezlab.org/v5/data/lineages/"
+		html = urlopen(url).read()
+		soup = BeautifulSoup(html, features="html.parser")
+	# kill all script and style elements
+		for script in soup(["script", "style"]):
+			script.extract()    # rip it out
+	# get text
+		text = soup.get_text()
+	# break into lines and remove leading and trailing space on each
+		lines = (line.strip() for line in text.splitlines())
+		linID=None
+	#identify the lineage file
+		for line in text.splitlines():
+			if line.startswith(args_l):
+	#			print(line)
+				linID=line.split(" ")[0]
+	#			print(linID)
+				break
+		if not linID==None:
+			linLink=url+linID
+	#		print(linLink)
+			print('Downloading Busco Database:', args_l)
+			subprocess.run("wget -q -P %s %s"%(outDir, linLink), shell=True, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+			subprocess.run("tar -xvf %s*.tar.gz -C %s"%(args_o + "/" + args_l, outDir), shell=True, check=True,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+			subprocess.run("rm %s_*.tar.gz"%(checkLineageDled), shell=True, check=True)
+			buscoDataBaseName=args_l
+			print('Downloading Busco Database:', args_l, " -  COMPLETE")
+		else:
+			raise ValueError("Error - could not identify lineage please check busco site for a correct prefix")
+
+else:
+	raise ValueError('Sample Sheet not recognised. Please make sure you are using the correct sample sheet')
+
+
+
+
+
+
+if "Results" not in config:
+	config["Results"] = "results"
+
+
+
+include: whichRule
+
+
+final_target_outputs = ruleAllQCFiles, ruleAll
+
+rule all:
+	input:
+		final_target_outputs

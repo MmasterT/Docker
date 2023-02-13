@@ -1,0 +1,14 @@
+channels:
+ - conda-forge
+ - bioconda
+ - anaconda
+dependencies:
+ - tabulate=0.8.7
+ - beautifulsoup4=4.9
+ - pandoc=2.15.*
+ - tectonic
+ - wkhtmltopdf
+ - pandas
+ - numpy
+ - ghostscript
+ - python=3.9.*

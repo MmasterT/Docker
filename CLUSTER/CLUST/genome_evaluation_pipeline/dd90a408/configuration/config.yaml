@@ -1,0 +1,28 @@
+
+### PATH TO WHERE YOU WANT YOUR RESULTS FOR THIS RUN STORED - WILL BE AUTOMATICALLY CREATED IF IT DOESN'T EXIST  ###
+
+Results:
+#e.g. Results: "/srv/public/users/james94/insecta.GEP.DATE"
+
+
+
+
+### FULL PATH TO YOUR SAMPLESHEET    ###
+
+samplesTSV:
+# e.g. samplesTSV: "/srv/public/users/james94/GEP/configuration/build.hifi.insecta.tsv"
+
+
+
+
+###     NAME OF YOUR DESIRED BUSCO DATABASE -  CAN BE FULL NAME (i.e. insecta_odb10) OR A SUBSTRING (i.e. insecta)   ###
+
+busco5Lineage:
+# e.g. busco5Lineage: "insecta"
+
+
+
+
+### PATH TO DEFINE RESOURCES FILE - DO NOT CHANGE UNLESS YOU WISH TO USE IN A DIFFERENT LOCATION  ####
+
+resources:             "configuration/define_resources.yaml"

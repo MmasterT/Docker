@@ -1,0 +1,12 @@
+channels:
+ - anaconda
+ - conda-forge
+ - bioconda
+dependencies:
+ - openssl==3.0.5
+ - python=3.10.5=ha86cf86_0_cpython
+ - pigz=2.6
+ - trim-galore=0.6.7
+ - pandoc=2.11.4
+ - multiqc=1.13
+ - trimmomatic=0.39

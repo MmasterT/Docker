@@ -1,0 +1,3 @@
+Busco Databases will be installed to this folder.  For reproducibility, if you manually download a database, put it here.
+
+Then you can refer to it by it's base name: i.e. "vertebrata" or "eudicots" rather than give the full path in the config.yaml

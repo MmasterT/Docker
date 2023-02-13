@@ -1,0 +1,3 @@
+sample   	hifi_reads				meryl_kmer_size	 	trimSMRTbell		fastQC
+organismX	/<pathto>/organismX_Hifi_Library1.fq	31			False			True
+organismX	/<pathto>/organismX_Hifi_Library2.fq	31			False			True

@@ -1,0 +1,5 @@
+Gaps_per_Gb    		Scaff_NG50_Mb   			Cont_NG50_Mb  		QV    		Completeness  		Comp_Single_BUSCOs_%
+'< 200'			'> 100Mbp'				'> 10Mbp'		'> 50'		'> 95%'			'> 95%'
+'200 - 1000'		'10Mbp - 100Mbp'			'1Mbp - 10Mbp'		'40 - 50'	'90% - 95%'		'90% - 95%'
+'1000 - 10000'		'0.1Mbp - 10Mbp'			'0.01Mbp - 1Mbp'	'35 - 40'	'80% - 90%'		'80% - 90%'
+'> 10000'		'< 0.1Mbp'				'< 0.01Mbp'		'< 35'		'< 80%'			'< 80%'

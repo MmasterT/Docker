@@ -1,0 +1,4 @@
+ID		ASM_LEVEL	PRI_asm				ALT_asm				 merylDB				merylDB_kmer 	genomeSize	HiC_R1 		HiC_R2
+AssemblyX.illu	chr		/<pathto>/speciesX.fasta	None				 /<pathTo>/speciesX.illuminaDB.meryl	21		auto		None		None
+AssemblyX.HiFi	chr		/<pathto>/speciesX.fasta	None				 /<pathTo>/speciesX.hifiDB.meryl	31		auto		None		None
+AssemblyY.illu	scaff		/<pathto>/speciesY.Primary.fa	/<pathto>/speciesY.Alternate.fa	 /<pathTo>/speciesY.illuminaDB.meryl	21		1050000		None		None

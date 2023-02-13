@@ -1,0 +1,13 @@
+name: GEP
+channels:
+ - conda-forge
+ - bioconda
+ - anaconda
+dependencies:
+ - snakemake==7.8.5
+ - beautifulsoup4==4.9.3
+ - pandas==1.4.2
+ - numpy==1.22.4
+ - python>=3.10
+ - mamba==0.25
+ - tabulate==0.8.10

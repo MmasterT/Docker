@@ -1,0 +1,355 @@
+# __default__:
+#     jobname:    'GEP.{rule}'
+#     partition:  begendiv,main
+#     # nCPUs:      "{threads}"
+#     qos:        'standard'
+#
+
+
+#### PRETEXT ####
+
+unzipHiC_R1:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     500
+    time:       "01:30:05"
+    threads:    4
+
+# symlinkUnzippedHiC_R1:
+#     jobname:    GEP.{rule}.{wildcards.asmID}
+#     mem_mb:     10
+#     time:       "00:05:00"
+#     threads:    1
+
+unzipHiC_R2:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     500
+    time:       "01:30:05"
+    threads:    4
+
+# symlinkUnzippedHiC_R2:
+#     jobname:    GEP.{rule}.{wildcards.asmID}
+#     mem_mb:     10
+#     time:       "00:05:00"
+#     threads:    1
+
+
+
+pretext_index_PRI_asm:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     72000
+    time:       "02:30:00"
+    threads:    1
+
+pretext_fastq2bam_R1:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     32000
+    time:       "08:00:00"
+    threads:    12
+
+
+pretext_fastq2bam_R2:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     32000
+    time:       "08:00:00"
+    threads:    12
+
+pretext_filter_5primeEnd_R1:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     200
+    time:       "08:00:00"
+    threads:    4
+
+pretext_filter_5primeEnd_R2:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     200
+    time:       "08:00:00"
+    threads:    4
+
+
+pretext_filtered_combine:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     9500
+    time:       "08:30:00"
+    threads:    12
+
+pretext_map:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     32000
+    time:       "08:30:00"
+    threads:    12
+
+pretext_snapshot:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     500
+    time:       "00:10:00"
+    threads:    1
+
+# pretextMaps2md:
+#     jobname:    GEP.{rule}.{wildcards.asmID}
+#     mem_mb:     500
+#     time:       "00:10:00"
+#     threads:    1
+
+
+unzipFasta_PRI:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     500
+    time:       "00:15:00"
+    threads:    4
+
+# symlinkUnzippedFasta_PRI:
+#     jobname:    GEP.{rule}.{wildcards.asmID}
+#     mem_mb:     500
+#     time:       "00:15:00"
+#     threads:    1
+
+
+unzipFasta_ALT:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     500
+    time:       "00:15:00"
+    threads:    4
+
+
+
+# symlinkUnzippedFasta_ALT:
+#     jobname:    GEP.{rule}.{wildcards.asmID}
+#     mem_mb:     500
+#     time:       "00:05:05"
+#     threads:    1
+
+
+merqury:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     40000
+    time:       "08:00:00"
+    threads:    8
+
+busco5:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     150000
+    time:       "1-00:00:00"
+    threads:    16
+
+
+
+# moveBuscoOutputs:
+#     jobname:    GEP.{rule}.{wildcards.asmID}
+#     mem_mb:     500
+#     time:       "00:05:05"
+#     threads:    1
+
+
+
+
+
+
+
+
+genomescope2:
+    jobname:    GEP.{rule}.{wildcards.asmID}.{wildcards.kmer}
+    mem_mb:     500
+    time:       "00:15:00"
+    threads:    1
+
+
+assemblyStats:
+    jobname:    GEP.{rule}.{wildcards.asmID}
+    mem_mb:     500
+    time:       "00:15:00"
+    threads:    1
+
+# saveConfiguration_and_getKeyValues_kmer:
+#     jobname:    GEP.{rule}.{wildcards.asmID}.{wildcards.kmer}
+#     mem_mb:     500
+#     time:       "00:05:00"
+#     threads:    1
+#
+#
+# saveConfiguration_and_getKeyValues:
+#     jobname:    GEP.{rule}.{wildcards.asmID}
+#     mem_mb:     500
+#     time:       "00:05:05"
+#     threads:    1
+#
+#
+# aggregateAllAssemblies:
+#     jobname:    GEP.{rule}
+#     mem_mb:     500
+#     time:       "00:05:05"
+#     threads:    1
+#
+# makeReport:
+#     jobname:    GEP.{rule}.{wildcards.asmID}.{wildcards.kmer}
+#     mem_mb:     500
+#     time:       "00:05:05"
+#     threads:    1
+#
+#
+# addFullTable:
+#     jobname:    GEP.{rule}
+#     mem_mb:     500
+#     time:       "00:05:05"
+#     threads:    1
+#
+# aggregateReport:
+#     jobname:    GEP.{rule}
+#     mem_mb:     500
+#     time:       "00:05:05"
+#     threads:    1
+
+
+makePDF:
+    jobname:    GEP.{rule}
+    mem_mb:     1000
+    time:       "00:10:05"
+    threads:    1
+
+###### Rules for illuminadb building ##########
+
+unzipFastq_R1:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trim10x}.{wildcards.trimAdapters}
+    mem_mb:     96000
+    time:       "01:45:05"
+    threads:    4
+
+
+unzipFastq_R2:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trim10x}.{wildcards.trimAdapters}
+    mem_mb:     96000
+    time:       "01:45:05"
+    threads:    4
+
+# symlinkUnzippedFastq_R1:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trim10x}.{wildcards.trimAdapters}
+#     mem_mb:     500
+#     time:       "00:01:35"
+#     threads:    1
+#
+# symlinkUnzippedFastq_R2:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trim10x}.{wildcards.trimAdapters}
+#     mem_mb:     500
+#     time:       "00:01:35"
+#     threads:    1
+
+
+
+
+# symLink_trim10xbarcodes_notrimAdapt:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}
+#     mem_mb:     500
+#     time:       "00:01:35"
+#     threads:    1
+#
+# symlinks_no10xOrAdaptTrim:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}
+#     mem_mb:     500
+#     time:       "00:01:35"
+#     threads:    1
+#
+#
+# symlinks_no10xwithAdaptTrim:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}
+#     mem_mb:     500
+#     time:       "00:01:35"
+#     threads:    1
+#
+#
+# symlink_trim10xbarcodesR2:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trimAdapters}
+#     mem_mb:     500
+#     time:       "00:01:35"
+#     threads:    1
+
+
+trim10xbarcodes:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trimAdapters}
+    mem_mb:     500
+    time:       "02:30:05"
+    threads:    4
+
+
+
+trimAdapters:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trim10x}
+    mem_mb:     500
+    time:       "02:30:05"
+    threads:    8
+
+
+fastqc_Illumina:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trimAdapters}.{wildcards.trim10x}
+    mem_mb:     1000
+    time:       "04:00:05"
+    threads:    4
+
+# multiqc_hifi:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.trimAdapters}.{wildcards.trim10x}
+#     mem_mb:     500
+#     time:       "01:00:05"
+#     threads:    1
+
+meryl_R1:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trimAdapters}.{wildcards.trim10x}.{wildcards.kmer}
+    mem_mb:     20000
+    time:       "01:30:05"
+    threads:    12
+
+meryl_R2:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.trimAdapters}.{wildcards.trim10x}.{wildcards.kmer}
+    mem_mb:     20000
+    time:       "01:30:05"
+    threads:    12
+
+meryl_illumina_build:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.trimAdapters}.{wildcards.trim10x}.{wildcards.kmer}
+    mem_mb:     30000
+    time:       "02:45:05"
+    threads:    12
+
+
+
+
+###### HIFI BUILD #######
+
+unzipHifi:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.smrtornot}
+    mem_mb:     128000
+    time:       "00:30:05"
+
+# symlinkUnzippedHifi:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.smrtornot}
+#     mem_mb:     500
+#     time:       "00:05:05"
+
+# symlinkfornotSmartTrimmed:
+#     jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}
+#     mem_mb:     500
+#     time:       "00:05:05"
+
+
+fastqc_hifi:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.smrtornot}
+    mem_mb:     12000
+    time:       "04:00:05"
+
+multiqc_hifi:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.smrtornot}
+    mem_mb:     4000
+    time:       "01:15:05"
+
+meryl_hifi_count:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}.{wildcards.smrtornot}.{wildcards.kmer}
+    mem_mb:     96000
+    time:       "02:30:05"
+
+meryl_hifi_build:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.smrtornot}.{wildcards.kmer}
+    mem_mb:     96000
+    time:       "01:30:05"
+
+
+trimSMRTbell:
+    jobname:    GEP.{rule}.{wildcards.sample}.{wildcards.readCounter}
+    mem_mb:     96000
+    time:       "01:30:05"
